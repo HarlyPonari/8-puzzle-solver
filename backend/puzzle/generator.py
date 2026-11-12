@@ -1,4 +1,5 @@
 import random as rd
+
 def generate_eight_puzzle():
   puzzle = list(range(9)) # non-inclusive leaves out 9 but includes 0 for empty
   while True:
@@ -8,10 +9,10 @@ def generate_eight_puzzle():
       if n != 0:
         numbers.append(n)
     
-    if isSolvable(numbers):
+    if is_solvable(numbers):
       return tuple(puzzle)
 
-def getInvCount(arr):
+def get_inv_count(arr):
   inv_count = 0
   for i in range(len(arr)):
     for j in range(i + 1, len(arr)):
@@ -19,7 +20,6 @@ def getInvCount(arr):
         inv_count += 1
   return inv_count
 
-def isSolvable(puzzle):
-  print(puzzle)
-  inv_count = getInvCount(puzzle)
+def is_solvable(puzzle):
+  inv_count = get_inv_count(puzzle)
   return (inv_count % 2 == 0)

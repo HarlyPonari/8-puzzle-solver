@@ -1,6 +1,6 @@
 from os import getenv
-from flask import Flask
-import solver
+from flask import Flask, request
+import puzzle
 
 app = Flask(__name__)
 
@@ -14,9 +14,21 @@ def test():
 @app.get("/formulate")
 def formulate_8_puzzle():
   return {
-    "message": solver.generate_eight_puzzle()
+    "message": puzzle.generate_eight_puzzle()
   }, 200
 
+@app.post("/")
+def solve_puzzle_post():
+  json = request.json
+  if json is None:
+    return {
+        "message": "Invalid request"
+    }, 500
+
+  puzzle = json["puzzle"]
+  return {
+    "message": puzzle.solve_puzzle(puzzle)
+  }
 
 if __name__ == "__main__":
   env = getenv("ENVIRONMENT")
