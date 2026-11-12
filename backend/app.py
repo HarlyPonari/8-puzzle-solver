@@ -1,6 +1,5 @@
 from os import getenv
-from logging import debug
-from flask import Flask, jsonify
+from flask import Flask
 import solver
 
 app = Flask(__name__)

@@ -33,3 +33,9 @@ python app.py
 2. Ensure you are running node version 22.23.05 as well as npm version 10.09.09 via the command `node -v && npm -v`
 3. Now install the packages using `npm ci` to clean install the node modules
 4. For dev mode in your console enter `npm run dev`
+
+
+### Running Tests
+1. The project uses `pytest` for verification of the backend functions. The package is already declared inside of `requirements.txt`
+2. Run `python3 -m pytest -v`
+
