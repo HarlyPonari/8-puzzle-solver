@@ -1,8 +1,12 @@
 from os import getenv
-from flask import Flask, jsonify, request
+from flask import Blueprint, Flask, jsonify, request
 import puzzle as p
 
 app = Flask(__name__)
+
+# Vercel forwards the original request path, so every API route lives under /api
+# (same path in dev through the Vite proxy, in tests, and in production).
+api = Blueprint("api", __name__, url_prefix="/api")
 
 @app.get("/")
 def test():
@@ -10,7 +14,7 @@ def test():
     "message": "Hello world.",
   }, 200
 
-@app.post("/solve")
+@api.post("/solve")
 def solve_8_puzzle():
   data = request.get_json(silent=True) # malformed JSON -> None -> 400, not an exception
   
@@ -38,11 +42,13 @@ def solve_8_puzzle():
     "solution_steps": solution
   }), 200
 
-@app.get("/formulate")
+@api.get("/formulate")
 def formulate_8_puzzle():
   return {
     "message": p.generate_eight_puzzle()
   }, 200
+
+app.register_blueprint(api)
 
 if __name__ == "__main__":
   env = getenv("ENVIRONMENT")

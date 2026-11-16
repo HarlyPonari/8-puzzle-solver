@@ -52,7 +52,7 @@ def dist():
 def test_formulation():
   client = app.test_client()
 
-  response = client.get("/formulate")
+  response = client.get("/api/formulate")
 
   assert response.status_code == 200
   json = response.json
@@ -73,7 +73,7 @@ def test_formulation():
 def test_generated_puzzle_is_solvable():
   client = app.test_client()
 
-  response = client.get("/formulate")
+  response = client.get("/api/formulate")
   json = response.json
   assert json is not None
   puzzle = json["message"]
@@ -201,7 +201,7 @@ def test_astar_is_optimal_on_random_boards(dist):
 def test_solve_endpoint_solvable():
   client = app.test_client()
   start = [7, 2, 4, 5, 0, 6, 8, 3, 1]
-  response = client.post("/solve", json={"puzzle": start})
+  response = client.post("/api/solve", json={"puzzle": start})
   assert response.status_code == 200
   steps = [tuple(s) for s in response.json["solution_steps"]]
   assert_valid_path(tuple(start), steps)
@@ -210,7 +210,7 @@ def test_solve_endpoint_solvable():
 
 def test_solve_endpoint_unsolvable_is_422():
   client = app.test_client()
-  response = client.post("/solve", json={"puzzle": [2, 1, 0, 3, 4, 5, 6, 7, 8]})
+  response = client.post("/api/solve", json={"puzzle": [2, 1, 0, 3, 4, 5, 6, 7, 8]})
   assert response.status_code == 422
   assert "unsolvable" in response.json["error"].lower()
 
@@ -226,10 +226,17 @@ def test_solve_endpoint_unsolvable_is_422():
 ])
 def test_solve_endpoint_malformed_json_is_400(body):
   client = app.test_client()
-  assert client.post("/solve", json=body).status_code == 400
+  assert client.post("/api/solve", json=body).status_code == 400
 
 
 def test_solve_endpoint_invalid_json_body_is_400():
   client = app.test_client()
-  response = client.post("/solve", data="{not json", content_type="application/json")
+  response = client.post("/api/solve", data="{not json", content_type="application/json")
   assert response.status_code == 400
+
+
+def test_routes_live_under_api_prefix_only():
+  client = app.test_client()
+  assert client.get("/formulate").status_code == 404
+  assert client.post("/solve", json={"puzzle": [0, 1, 2, 3, 4, 5, 6, 7, 8]}).status_code == 404
+  assert client.get("/api/formulate").status_code == 200

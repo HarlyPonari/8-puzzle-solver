@@ -1,0 +1,5 @@
+backend/tests/
+backend/requirements-dev.txt
+**/__pycache__
+frontend/dist
+.DS_Store
