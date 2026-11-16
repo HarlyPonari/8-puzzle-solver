@@ -1,6 +1,6 @@
 from os import getenv
-from flask import Flask, request
-import puzzle
+from flask import Flask, jsonify, request
+import puzzle as p
 
 app = Flask(__name__)
 
@@ -10,11 +10,38 @@ def test():
     "message": "Hello world.",
   }, 200
 
+@app.post("/solve")
+def solve_8_puzzle():
+  data = request.get_json()
+  
+  if not isinstance(data, dict):
+    return jsonify({"error": "Expected a JSON object"}), 400
+
+  puzzle = data.get("puzzle")
+  
+  # data validation
+  if(
+    not isinstance(puzzle, list) # is it a list
+    or len(puzzle) != 9 # is it 9 long?
+    or any(type(n) is not int for n in puzzle) # are the entries ints
+    or set(puzzle) != set(range(9))
+  ):
+    return jsonify({"error": "Invalid puzzle format"}), 400
+  
+  solution = p.astar(tuple(puzzle))
+  if solution is None:
+    return jsonify({
+      "message": "Could not solve puzzle"
+    }), 500
+
+  return jsonify({
+    "solution_steps": solution
+  }), 200
 
 @app.get("/formulate")
 def formulate_8_puzzle():
   return {
-    "message": puzzle.generate_eight_puzzle()
+    "message": p.generate_eight_puzzle()
   }, 200
 
 @app.post("/")
@@ -27,8 +54,8 @@ def solve_puzzle_post():
 
   puzzle = json["puzzle"]
   return {
-    "message": puzzle.solve_puzzle(puzzle)
-  }
+    "message": puzzle.astar(puzzle)
+  }, 200
 
 if __name__ == "__main__":
   env = getenv("ENVIRONMENT")
