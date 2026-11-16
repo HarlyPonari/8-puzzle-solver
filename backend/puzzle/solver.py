@@ -9,8 +9,7 @@ GOAL_INDEX = {tile: index for index, tile in enumerate(GOAL)}
 # f, g, state where f = h + g (g is 0 for start)
 HeapEntry = tuple[int, int, BoardState]
 
-# needs a prio queue, we can use some sort of heap?
-# min heap fits I believe and we can use heapq in python see https://www.geeksforgeeks.org/python/min-heap-in-python/
+
 def astar(p: BoardState) -> list[BoardState] | None:
   if not is_solvable(p):
     return None
@@ -62,7 +61,7 @@ def heuristic(state):
       continue
     goal_index = GOAL_INDEX[tile] # looked up from GOAL, e.g. tile 8 belongs at index 8
 
-    # using the divide mod func we have the x1,y1 and x2, y2 for the current and goal tiles
+
     curr_row, curr_col = divide_mod(index, 3) 
     goal_row, goal_col = divide_mod(goal_index, 3)
 
@@ -103,7 +102,6 @@ def neighbors(state: BoardState):
   return results
 
 # simple helper function
-# since we ar eusing a tuple to represent the state the mod retuns the column and the quotient is the row
 def divide_mod(dividend, base: int):
   return dividend // base, dividend % base
 

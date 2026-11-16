@@ -9,7 +9,7 @@ from puzzle.generator import generate_eight_puzzle, is_solvable
 from puzzle.solver import GOAL, astar, heuristic, is_solved, neighbors
 
 
-# ---------------------------------------------------------------- helpers
+
 
 def bfs_distances():
   """True shortest distance to GOAL for every reachable state (moves are reversible)."""
@@ -47,7 +47,7 @@ def dist():
   return bfs_distances()
 
 
-# ---------------------------------------------------------------- generator / endpoint basics
+
 
 def test_formulation():
   client = app.test_client()
@@ -80,7 +80,7 @@ def test_generated_puzzle_is_solvable():
   assert is_solvable(puzzle) # full board incl. the blank: is_solvable filters 0 itself
 
 
-# ---------------------------------------------------------------- goal / heuristic
+
 
 def test_goal_is_blank_first():
   assert GOAL == (0, 1, 2, 3, 4, 5, 6, 7, 8)
@@ -104,7 +104,7 @@ def test_heuristic_never_overestimates(dist):
     assert heuristic(state) <= d
 
 
-# ---------------------------------------------------------------- solvability
+
 
 def test_is_solvable_ignores_blank():
   # same tile order 1..8, blank at every index: all solvable
@@ -124,7 +124,7 @@ def test_is_solvable_matches_bfs_reachability(dist):
     assert is_solvable(perm) == (perm in dist)
 
 
-# ---------------------------------------------------------------- astar
+
 
 def test_known_26_move_puzzle():
   start = (7, 2, 4, 5, 0, 6, 8, 3, 1)
@@ -188,7 +188,7 @@ def test_unsolvable_returns_none_without_searching(monkeypatch):
 
 
 def test_astar_is_optimal_on_random_boards(dist):
-  random.seed(1234) # generate_eight_puzzle uses the global RNG; seed for reproducibility
+  random.seed(1234) 
   for _ in range(200):
     start = generate_eight_puzzle()
     path = astar(start)
@@ -196,7 +196,7 @@ def test_astar_is_optimal_on_random_boards(dist):
     assert len(path) - 1 == dist[start], f"{start}: astar {len(path) - 1} vs optimal {dist[start]}"
 
 
-# ---------------------------------------------------------------- POST /solve
+
 
 def test_solve_endpoint_solvable():
   client = app.test_client()
