@@ -2,6 +2,10 @@ import heapq
 from puzzle.generator import is_solvable
 
 BoardState = tuple[int, int, int, int, int, int, int, int, int]
+# blank-first goal: tile n belongs at index n (0 is the blank)
+GOAL: BoardState = (0, 1, 2, 3, 4, 5, 6, 7, 8)
+GOAL_INDEX = {tile: index for index, tile in enumerate(GOAL)}
+
 # f, g, state where f = h + g (g is 0 for start)
 HeapEntry = tuple[int, int, BoardState]
 
@@ -56,13 +60,13 @@ def heuristic(state):
   for index, tile in enumerate(state):
     if tile == 0: # we skip the empty tile for manhattan distance, we sort tiles not empty space
       continue
-    goal_index = tile - 1 # for example, 8 we want it in the (8-1) position (grid starts at 0)
+    goal_index = GOAL_INDEX[tile] # looked up from GOAL, e.g. tile 8 belongs at index 8
 
     # using the divide mod func we have the x1,y1 and x2, y2 for the current and goal tiles
     curr_row, curr_col = divide_mod(index, 3) 
     goal_row, goal_col = divide_mod(goal_index, 3)
 
-    # sort of manhattan distance, saves on uneeded math like exponentiation and sqrt
+    # exactly the Manhattan distance: |row diff| + |col diff| (no exponentiation or sqrt needed)
     distance += abs(curr_row - goal_row)
     distance += abs(curr_col - goal_col)
 
@@ -70,7 +74,7 @@ def heuristic(state):
 
 
 def is_solved(p: BoardState):
-  return p == (1, 2, 3, 4, 5, 6, 7, 8, 0)
+  return p == GOAL
 
 def neighbors(state: BoardState):
   empty = state.index(0)

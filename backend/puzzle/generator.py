@@ -3,13 +3,8 @@ import random as rd
 def generate_eight_puzzle():
   puzzle = list(range(9)) # non-inclusive leaves out 9 but includes 0 for empty
   while True:
-    rd.shuffle(puzzle) 
-    numbers = []
-    for n in puzzle:
-      if n != 0:
-        numbers.append(n)
-    
-    if is_solvable(numbers):
+    rd.shuffle(puzzle)
+    if is_solvable(puzzle):
       return tuple(puzzle)
 
 def get_inv_count(arr):
@@ -21,5 +16,6 @@ def get_inv_count(arr):
   return inv_count
 
 def is_solvable(puzzle):
-  inv_count = get_inv_count(puzzle)
-  return (inv_count % 2 == 0)
+  # the blank (0) is not a tile and must not count towards inversions
+  tiles = [n for n in puzzle if n != 0]
+  return get_inv_count(tiles) % 2 == 0

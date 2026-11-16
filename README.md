@@ -15,7 +15,7 @@
 ### Backend Setup
 1. First install and then activate the virtual environment.
 ```bash
-python3 -m venv .venv && ./.venv/bin/activate
+python3 -m venv .venv && source .venv/bin/activate
 ```
 
 2. Install the requirements

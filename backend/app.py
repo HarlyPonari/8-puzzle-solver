@@ -12,7 +12,7 @@ def test():
 
 @app.post("/solve")
 def solve_8_puzzle():
-  data = request.get_json()
+  data = request.get_json(silent=True) # malformed JSON -> None -> 400, not an exception
   
   if not isinstance(data, dict):
     return jsonify({"error": "Expected a JSON object"}), 400
@@ -31,8 +31,8 @@ def solve_8_puzzle():
   solution = p.astar(tuple(puzzle))
   if solution is None:
     return jsonify({
-      "message": "Could not solve puzzle"
-    }), 500
+      "error": "This puzzle is unsolvable: its tile inversion count has the wrong parity to ever reach the goal."
+    }), 422
 
   return jsonify({
     "solution_steps": solution
@@ -42,19 +42,6 @@ def solve_8_puzzle():
 def formulate_8_puzzle():
   return {
     "message": p.generate_eight_puzzle()
-  }, 200
-
-@app.post("/")
-def solve_puzzle_post():
-  json = request.json
-  if json is None:
-    return {
-        "message": "Invalid request"
-    }, 500
-
-  puzzle = json["puzzle"]
-  return {
-    "message": puzzle.astar(puzzle)
   }, 200
 
 if __name__ == "__main__":
