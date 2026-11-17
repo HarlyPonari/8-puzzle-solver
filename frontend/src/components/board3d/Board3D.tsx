@@ -22,7 +22,7 @@ export function Board3D({ board, durationMs, solved, resetKey }: Board3DProps) {
       shadows="percentage"
       flat
       dpr={[1, 2]}
-      camera={{ position: [0, 2.4, 8], fov: 38 }}
+      camera={{ position: [0, 0, 7], fov: 38 }}
       aria-label="3D view of the 8-puzzle board"
     >
       <ambientLight intensity={0.9} />
