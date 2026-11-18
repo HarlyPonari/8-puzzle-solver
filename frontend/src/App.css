@@ -1,14 +1,15 @@
 .app {
   max-width: 1180px;
   margin: 0 auto;
-  padding: 24px 16px 40px;
+  padding: 24px max(16px, env(safe-area-inset-right)) max(40px, env(safe-area-inset-bottom))
+    max(16px, env(safe-area-inset-left));
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
 .app-header h1 {
-  font-size: 1.6rem;
+  font-size: clamp(1.25rem, 5vw, 1.6rem);
   letter-spacing: -0.01em;
 }
 
@@ -44,6 +45,7 @@
   position: relative;
   aspect-ratio: 1 / 1;
   max-height: 78vh;
+  max-height: 78dvh;
   width: 100%;
   border-radius: 16px;
   border: 1px solid var(--panel-border);
@@ -122,7 +124,7 @@
   background: #11141f;
   color: var(--text);
   font-family: var(--mono);
-  font-size: 1.05rem;
+  font-size: max(16px, 1.05rem);
   letter-spacing: 0.08em;
 }
 
@@ -284,6 +286,9 @@
   display: flex;
   gap: 10px;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
 }
 
@@ -298,6 +303,7 @@
   background: var(--panel);
   color: var(--muted);
   cursor: pointer;
+  scroll-snap-align: center;
   transition:
     border-color 0.15s,
     background 0.15s;
@@ -352,12 +358,123 @@
   color: #fff;
 }
 
+/* Vertical swipes scroll the page; horizontal drags and pinch still reach OrbitControls.
+   !important is required because three.js writes touch-action: none inline on the canvas. */
+.stage canvas {
+  touch-action: pan-y !important;
+}
+
+/* ---------- Tablet / phone: single column ---------- */
 @media (max-width: 860px) {
   .layout {
-    grid-template-columns: minmax(0, 1fr);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Square board that never takes more than ~half the screen height, centred. */
+  .stage {
+    width: min(100%, 52dvh);
+    max-height: none;
+    margin-inline: auto;
+    /* Keep the board in view while the controls below scroll past it. */
+    position: sticky;
+    top: max(8px, env(safe-area-inset-top));
+    z-index: 5;
+    box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.6);
+  }
+
+  .stage-solved {
+    box-shadow:
+      0 0 0 1px var(--goal),
+      0 0 40px rgba(74, 222, 128, 0.25);
+  }
+}
+
+/* ---------- Phones ---------- */
+@media (max-width: 480px) {
+  .app {
+    padding-top: max(14px, env(safe-area-inset-top));
+    gap: 14px;
+  }
+
+  .app-header p {
+    font-size: 0.9rem;
   }
 
   .stage {
-    max-height: none;
+    width: min(100%, 46dvh);
+    border-radius: 12px;
+  }
+
+  .goal-badge {
+    top: 8px;
+    padding: 4px 12px;
+    font-size: 0.85rem;
+  }
+
+  .panel {
+    padding: 14px;
+    gap: 10px;
+    border-radius: 12px;
+  }
+
+  .btn {
+    padding: 9px 10px;
+  }
+
+  .step-label {
+    font-size: 1.2rem;
+  }
+
+  .stats dd {
+    font-size: 1rem;
+  }
+
+  /* Let the long "Reset to start" label and Play/Pause breathe instead of overflowing. */
+  .button-row .btn {
+    flex: 1 1 auto;
+  }
+}
+
+/* ---------- Touch devices: comfortable tap targets (>= 44px) ---------- */
+@media (pointer: coarse) {
+  .btn,
+  .seg {
+    min-height: 44px;
+  }
+
+  .strip-item {
+    padding: 10px;
+  }
+
+  .stage-hint {
+    font-size: 0.72rem;
+  }
+}
+
+/* ---------- Landscape phones: board left, controls right ---------- */
+@media (max-height: 520px) and (orientation: landscape) {
+  .app {
+    padding-top: 12px;
+    padding-bottom: 24px;
+    gap: 12px;
+  }
+
+  .app-header p {
+    display: none;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: min(46%, calc(100dvh - 90px)) minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+  }
+
+  .stage {
+    width: 100%;
+    margin: 0;
+    top: 8px;
   }
 }

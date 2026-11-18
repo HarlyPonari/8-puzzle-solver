@@ -25,6 +25,13 @@
   box-sizing: border-box;
 }
 
+html {
+  /* Stop iOS from inflating text after rotation. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
   margin: 0;
   min-width: 320px;
@@ -42,6 +49,11 @@ p {
 button,
 input {
   font: inherit;
+}
+
+/* Removes the double-tap-to-zoom delay on controls. */
+button {
+  touch-action: manipulation;
 }
 
 :focus-visible {
